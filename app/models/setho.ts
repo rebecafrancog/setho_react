@@ -11,7 +11,7 @@ export interface Account {
   id: string;
   name: string;
   email: string;
-  password?: string;
+  password: string;
   city: string;
   role: AccountRole;
   org?: string;

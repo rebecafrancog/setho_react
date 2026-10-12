@@ -34,16 +34,9 @@ def create_app(test_config=None):
     app.register_blueprint(opportunities_bp, url_prefix="/api/opportunities")
     app.register_blueprint(donations_bp, url_prefix="/api/donations")
 
-    @app.get("/")
-    def home():
-        return {
-            "message": "Bem-vindo a API do SETHO!",
-            "health": "/api/health",
-        }, 200
-
     @app.get("/api/health")
     def health():
-        return {"status": "ok", "application": "SETHO API"}, 200
+        return {"status": "ok", "application": "SETHO API"}
 
     @app.errorhandler(404)
     def not_found(_error):
@@ -52,7 +45,7 @@ def create_app(test_config=None):
     @app.errorhandler(422)
     def invalid_request(_error):
         return jsonify(error="Dados da requisição inválidos."), 422
-    
+
     @app.cli.command("seed")
     def seed_command():
         from .seed import seed_database
