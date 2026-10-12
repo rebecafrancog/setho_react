@@ -37,9 +37,13 @@ def create_app(test_config=None):
     @app.get("/")
     def home():
         return {
-        "message": "Bem-vindo a API do SETHO!",
-        "health": "/api/health"
-    }, 200
+            "message": "Bem-vindo à API do SETHO!",
+            "health": "/api/health",
+        }, 200
+
+    @app.get("/api/health")
+    def health():
+        return {"status": "ok", "application": "SETHO API"}, 200
 
     @app.errorhandler(404)
     def not_found(_error):

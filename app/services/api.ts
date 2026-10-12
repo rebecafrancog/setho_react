@@ -8,7 +8,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   headers.set('Content-Type', 'application/json');
 
   if (options.authenticated) {
-    const token = sessionStorage.getItem(TOKEN_KEY);
+    const token = localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY);
     if (!token) throw new Error('Faça login para continuar.');
     headers.set('Authorization', `Bearer ${token}`);
   }
@@ -23,11 +23,17 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 }
 
 export const tokenStorage = {
-  save(token: string) {
-    sessionStorage.setItem(TOKEN_KEY, token);
+  save(token: string, remember = true) {
+    localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
+    (remember ? localStorage : sessionStorage).setItem(TOKEN_KEY, token);
   },
   clear() {
+    localStorage.removeItem(TOKEN_KEY);
     sessionStorage.removeItem(TOKEN_KEY);
+  },
+  has() {
+    return Boolean(localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY));
   },
 };
 

@@ -26,7 +26,8 @@ import { toast } from "sonner";
 import { seed, repository, categories } from "./data";
 import { money, date } from "./utils/formatters";
 import { Form, Choice, field } from "./forms";
-import { authenticate, accountHome, allowedAccountRoute } from "./auth";
+import { accountHome, allowedAccountRoute } from "./auth";
+import { api, tokenStorage } from "./services/api";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   OrganizationIdentity,
@@ -178,17 +179,49 @@ export default function App() {
   };
   const finishLogin = (account: any) => {
     update((d: any) => {
+      const index = d.accounts.findIndex((item: any) => item.id === account.id);
+      if (index >= 0) d.accounts[index] = { ...d.accounts[index], ...account };
+      else d.accounts.push(account);
       d.session = { ...account, remember };
       return d;
     });
     sessionStorage.removeItem("setho-return");
     go(accountHome(account.role));
   };
-  const demo = (role: string) => {
-    const account = db.accounts.find(
-      (a: any) => a.id === (role === "ong" ? "demo-ong" : "demo-user"),
-    );
-    if (account) finishLogin(account);
+  const apiAccount = (userData: any) => ({
+    id: String(userData.id),
+    name: userData.name,
+    email: userData.email,
+    city: userData.city,
+    role: userData.role,
+    org: userData.organization_id ? String(userData.organization_id) : undefined,
+  });
+  const syncOrganization = async (account: any) => {
+    if (account.role !== "ong" || !account.org) return;
+    const response: any = await api.organizations.get(Number(account.org));
+    const organization = {
+      ...response.organization,
+      id: String(response.organization.id),
+      image: response.organization.image || "/setho.jpeg",
+    };
+    update((d: any) => {
+      const index = d.orgs.findIndex((item: any) => item.id === organization.id);
+      if (index >= 0) d.orgs[index] = { ...d.orgs[index], ...organization };
+      else d.orgs.push(organization);
+      return d;
+    });
+  };
+  const demo = async (role: string) => {
+    const email = role === "ong" ? "ong@setho.com" : "usuario@setho.com";
+    try {
+      const response = await api.auth.login(email, "123456");
+      tokenStorage.save(response.access_token, remember);
+      const account = apiAccount(response.user);
+      await syncOrganization(account);
+      finishLogin(account);
+    } catch (error: any) {
+      toast.error(error.message || "Não foi possível acessar a conta de demonstração.");
+    }
   };
   const stats = (items: any[]) => (
     <div className="stats">
@@ -944,7 +977,11 @@ export default function App() {
             </div>
           }
           onSubmit={async (v: any) => {
-            finishLogin(authenticate(db.accounts, v.email, v.password));
+            const response = await api.auth.login(v.email, v.password);
+            tokenStorage.save(response.access_token, remember);
+            const account = apiAccount(response.user);
+            await syncOrganization(account);
+            finishLogin(account);
           }}
         />
         <div className="or-divider">
@@ -986,22 +1023,19 @@ export default function App() {
             field("confirm", "Confirmar senha", "password"),
           ]}
           onSubmit={async (v: any) => {
-            if (
-              db.accounts.some(
-                (a: any) => a.email.toLowerCase() === v.email.toLowerCase(),
-              )
-            )
-              throw Error("Este e-mail já está cadastrado.");
-            const a = { ...v, id: crypto.randomUUID(), role: "user" };
-            update((d: any) => {
-              d.accounts.push(a);
-              return d;
+            const response = await api.auth.register({
+              name: v.name,
+              email: v.email,
+              city: v.city,
+              password: v.password,
+              role: "user",
             });
-            finishLogin(a);
+            tokenStorage.save(response.access_token, remember);
+            finishLogin(apiAccount(response.user));
           }}
         />
         <p className="note">
-          Cadastro simulado neste navegador. Use uma senha fictícia.
+          Sua conta será salva no banco de dados e poderá ser acessada em outros dispositivos.
         </p>
         {link("entrar", "Já tenho uma conta", "text-link")}
       </>
@@ -1122,26 +1156,37 @@ export default function App() {
               window.scrollTo(0, 0);
               return;
             }
-            if (db.accounts.some((a: any) => a.email === next.email))
-              throw Error("E-mail já cadastrado.");
-            const oid = crypto.randomUUID(),
-              a = {
-                id: crypto.randomUUID(),
-                role: "ong",
-                org: oid,
-                name: next.responsible,
-                email: next.email,
-                password: next.password,
+            const response = await api.auth.register({
+              name: next.responsible,
+              email: next.email,
+              password: next.password,
+              city: next.city,
+              role: "ong",
+              organization: {
+                name: next.name,
                 city: next.city,
-              };
+                district: next.district,
+                category: next.category,
+                description: next.description,
+                mission: next.mission,
+                history: next.history,
+              },
+            });
+            tokenStorage.save(response.access_token, true);
+            const a = apiAccount(response.user);
             update((d: any) => {
-              d.orgs.push({
+              const organization = {
                 ...next,
-                id: oid,
+                id: a.org,
                 image: next.image || "/setho.jpeg",
-              });
-              d.accounts.push(a);
-              d.session = a;
+              };
+              const orgIndex = d.orgs.findIndex((item: any) => item.id === a.org);
+              if (orgIndex >= 0) d.orgs[orgIndex] = organization;
+              else d.orgs.push(organization);
+              const accountIndex = d.accounts.findIndex((item: any) => item.id === a.id);
+              if (accountIndex >= 0) d.accounts[accountIndex] = a;
+              else d.accounts.push(a);
+              d.session = { ...a, remember: true };
               return d;
             });
             setStep(1);
@@ -1154,7 +1199,7 @@ export default function App() {
             Voltar à etapa anterior
           </button>
         )}
-        <p className="note">Cadastro local de demonstração.</p>
+        <p className="note">Cadastro protegido e salvo no banco de dados.</p>
       </>
     );
   } else if (
@@ -1373,6 +1418,7 @@ export default function App() {
           <button
             className="menu-link logout-row"
             onClick={() => {
+              tokenStorage.clear();
               update((d: any) => {
                 d.session = null;
                 return d;
