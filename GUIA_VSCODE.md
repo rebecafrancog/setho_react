@@ -136,3 +136,25 @@ O projeto usa uma abordagem **mobile first** e possui três faixas principais:
 - desktop/web: a partir de `900px`, com um refinamento adicional em `1200px`.
 
 As regras estão no final de `app/globals.css`. Em telas maiores, o conteúdo ganha mais largura, filtros são reorganizados e listas de ONGs, oportunidades, projetos e doações passam a usar duas colunas. Em telas pequenas, tudo retorna automaticamente para uma coluna e a navegação fica na parte inferior.
+
+## 11. Executar o backend Flask
+
+Abra um segundo terminal no VS Code:
+
+```bash
+cd backend
+python -m venv .venv
+```
+
+No Windows:
+
+```powershell
+.venv\Scripts\activate
+pip install -r requirements.txt
+flask --app run seed
+flask --app run run --debug --port 5000
+```
+
+Mantenha esse terminal aberto e execute o React em outro terminal com `npm run dev`. O front utiliza a porta `5173` e o backend utiliza a porta `5000`.
+
+Leia `backend/README.md` para conhecer as rotas e `INTEGRACAO_API.md` para estudar como o React chama a API.

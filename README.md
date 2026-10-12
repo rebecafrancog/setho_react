@@ -1,6 +1,6 @@
 # SETHO
 
-Aplicativo exclusivamente front-end em React e Next.js, responsivo para celular e web, com navegação por rotas hash e dados simulados persistidos no navegador.
+Aplicação responsiva em React/Next.js com uma API REST didática em Flask, SQLAlchemy e SQLite.
 
 O código foi organizado de forma didática para um projeto de Análise e Desenvolvimento de Sistemas. Consulte `ARQUITETURA.md` para conhecer as camadas, os modelos, o serviço de persistência, o hook de navegação e os componentes compartilhados.
 
@@ -15,7 +15,7 @@ Para gerar a versão estática:
 
     npm run build
 
-A saída de produção fica em `out/` e pode ser hospedada em qualquer servidor de arquivos estáticos. Não existe servidor, API ou banco de dados neste pacote. A prévia local usa a porta 5173.
+A saída do front-end fica em `out/`. A prévia local usa a porta 5173 e a API Flask usa a porta 5000.
 
 ## Demonstração
 
@@ -32,9 +32,11 @@ Doações não efetuam cobranças. Autenticação, recuperação de senha e cada
 - app/globals.css: identidade visual e apresentação para celular.
 - public/setho.jpeg: logo original fornecida.
 
-## Arquitetura front-end
+## Backend Flask
 
-O projeto não inclui banco de dados, API, Drizzle, Cloudflare Workers ou arquivos de infraestrutura de servidor. Login, cadastros, doações e inscrições são demonstrações executadas apenas no navegador.
+O backend está na pasta `backend/`. Consulte `backend/README.md` para criar o ambiente virtual, instalar as dependências, preparar o banco SQLite e executar os testes. Consulte `INTEGRACAO_API.md` para ligar cada fluxo do React à API.
+
+As telas ainda preservam o modo local original como apoio didático. O cliente HTTP centralizado em `app/services/api.ts` permite migrar os fluxos gradualmente para o Flask.
 
 ## Verificação
 

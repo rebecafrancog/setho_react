@@ -4,7 +4,7 @@ Este documento apresenta a organização do projeto como um trabalho acadêmico 
 
 ## Objetivo
 
-O SETHO é uma aplicação web responsiva que conecta usuários e organizações sociais. A versão atual demonstra cadastro, autenticação local, doações simuladas, oportunidades de voluntariado, notificações e administração de uma ONG.
+O SETHO é uma aplicação web responsiva que conecta usuários e organizações sociais. O front-end utiliza React/Next.js e o backend utiliza Flask, SQLAlchemy, SQLite e JWT.
 
 ## Organização em camadas
 
@@ -13,12 +13,12 @@ Interface (componentes e páginas)
              ↓
 Regras da aplicação (autenticação e fluxos)
              ↓
-Serviço front-end (persistência local)
+API REST Flask
              ↓
-localStorage e sessionStorage do navegador
+SQLAlchemy e banco SQLite
 ```
 
-Essa separação diminui o acoplamento. Nesta versão não existe backend: todas as operações são simuladas no navegador. O serviço de persistência poderá ser substituído futuramente por uma API, caso o projeto evolua.
+Essa separação diminui o acoplamento. O cliente HTTP do React conversa com rotas REST, enquanto o Flask aplica regras e persiste os dados. O modo local anterior foi preservado temporariamente para permitir uma migração didática, tela por tela.
 
 ## Estrutura principal
 
