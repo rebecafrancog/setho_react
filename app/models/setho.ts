@@ -1,10 +1,3 @@
-/**
- * Modelos principais do domínio SETHO.
- *
- * Em um projeto acadêmico, os modelos documentam quais dados circulam entre
- * interface, regras de negócio e persistência. Eles também ajudam o TypeScript
- * a encontrar erros antes da execução.
- */
 export type AccountRole = 'user' | 'ong';
 
 export interface Account {

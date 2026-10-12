@@ -10,7 +10,7 @@ export const mockAccounts = [
   }, // conta Usuário de teste
   {
     id: "demo-ong",
-    name: "Projeto Saber Viver - Org. Carla Isabel",
+    name: "Projeto Saber Viver",
     email: "ong@setho.com",
     password: "123456",
     city: "João Pessoa",

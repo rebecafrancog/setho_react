@@ -4,11 +4,6 @@ import type {SethoDatabase} from '../models/setho';
 const DATABASE_KEY = 'setho-v1';
 const SESSION_KEY = 'setho-session';
 
-/**
- * Camada de persistência local.
- * A interface usa este serviço sem precisar conhecer os detalhes do
- * localStorage. Futuramente, ele pode ser substituído por chamadas a uma API.
- */
 export function createRepository(initialData: SethoDatabase) {
   return {
     load(): SethoDatabase {

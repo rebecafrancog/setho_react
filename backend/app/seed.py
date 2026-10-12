@@ -5,14 +5,14 @@ from .models import Opportunity, Organization, Project, User
 
 
 def seed_database():
-    """Cria contas e registros demonstrativos sem duplicá-los."""
+    """cria contas e registros demonstrativos sem duplicá-los."""
     if User.query.filter_by(email="usuario@setho.com").first():
         return False
 
-    user = User(name="Eloisa Silva", email="usuario@setho.com", city="João Pessoa", role="user")
+    user = User(name="Eloisa Horacio", email="usuario@setho.com", city="João Pessoa", role="user")
     user.set_password("123456")
 
-    owner = User(name="Ana Souza", email="ong@setho.com", city="João Pessoa", role="ong")
+    owner = User(name="Projeto Saber Viver", email="ong@setho.com", city="João Pessoa", role="ong")
     owner.set_password("123456")
     db.session.add_all([user, owner])
     db.session.flush()

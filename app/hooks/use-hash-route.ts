@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from 'react';
 
-/** Roteamento simples usado pela demonstração, baseado no hash da URL. */
+/** roteamento simples usado pela demonstração, baseado no hash da URL. */
 export function useHashRoute() {
   const [route, setRoute] = useState('');
 

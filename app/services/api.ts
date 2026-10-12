@@ -1,6 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api';
 const TOKEN_KEY = 'setho-api-token';
 
+
 type RequestOptions = RequestInit & {authenticated?: boolean};
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
