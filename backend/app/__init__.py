@@ -37,7 +37,7 @@ def create_app(test_config=None):
     @app.get("/")
     def home():
         return {
-            "message": "Bem-vindo à API do SETHO!",
+            "message": "Bem-vindo a API do SETHO!",
             "health": "/api/health",
         }, 200
 
@@ -55,7 +55,6 @@ def create_app(test_config=None):
     
     @app.cli.command("seed")
     def seed_command():
-        """Preenche o banco com dados de demonstração."""
         from .seed import seed_database
 
         created = seed_database()
